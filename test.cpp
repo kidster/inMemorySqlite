@@ -24,11 +24,13 @@ int main(int argc, char **argv){
     }
     rc = sqlite3_open(argv[1], &db);
     if( SQLITE_OK == sqlite3_open(":memory:", &pInMemory) && rc == SQLITE_OK){
-        dbBackup = sqlite3_backup_init(pInMemory, "tbl1", db, "tbl1");
+        dbBackup = sqlite3_backup_init(pInMemory, "main", db, "main");
         if (dbBackup){
             (void)sqlite3_backup_step(dbBackup, -1);
             sqlite3_exec(pInMemory, "UPDATE tbl1 SET one = 'hello!' WHERE two = 10", callback, 0, &zErrMsg);
+            sqlite3_exec(pInMemory, "UPDATE tbl2 SET name = 'hello!' WHERE last = 'm'", callback, 0, &zErrMsg);
             sqlite3_exec(pInMemory, "select * from tbl1", callback, 0, &zErrMsg);
+            sqlite3_exec(pInMemory, "select * from tbl2", callback, 0, &zErrMsg);
             (void)sqlite3_backup_finish(dbBackup);
         }
     } else if( rc ){
@@ -37,8 +39,9 @@ int main(int argc, char **argv){
         return(1);
     } 
 
-    printf("Here");
+    printf("Here\n");
     rc = sqlite3_exec(db, "select * from tbl1", callback, 0, &zErrMsg);
+    sqlite3_exec(db, "select * from tbl2", callback, 0, &zErrMsg);
     if( rc!=SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
