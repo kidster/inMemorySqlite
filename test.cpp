@@ -24,7 +24,7 @@ int main(int argc, char **argv){
     }
     rc = sqlite3_open(argv[1], &db);
     if( SQLITE_OK == sqlite3_open(":memory:", &pInMemory) && rc == SQLITE_OK){
-        dbBackup = sqlite3_backup_init(pInMemory, "main", db, "main");
+        dbBackup = sqlite3_backup_init(pInMemory, "tbl1", db, "tbl1");
         if (dbBackup){
             (void)sqlite3_backup_step(dbBackup, -1);
             sqlite3_exec(pInMemory, "UPDATE tbl1 SET one = 'hello!' WHERE two = 10", callback, 0, &zErrMsg);
